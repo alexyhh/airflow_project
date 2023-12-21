@@ -1,10 +1,15 @@
 # dags/my_dag.py
+import sys
+
+sys.path.append('/home/alex/Desktop/DataEngineering/')
+
 from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from scripts.extract_data import extract_data
 from scripts.clean_data import clean_data
 from scripts.load_data import load_data
+
 
 default_args = {
     'owner': 'airflow',
@@ -24,23 +29,21 @@ dag = DAG(
 extract_task = PythonOperator(
     task_id='extract_data',
     python_callable=extract_data,
-    provide_context=False,
-    op_args=["C:\Users\alexl\DataEngineering\airflow_project\Data in csv\source_data.csv"],
+    op_args=["/home/alex/Desktop/DataEngineering/Data in csv/source_data.csv"],
     dag=dag,
 )
 
 clean_task = PythonOperator(
     task_id='clean_data',
     python_callable=clean_data,
-    provide_context=False,
-    op_args=[],
+    op_args=["/home/alex/Desktop/DataEngineering/Data in csv/source_data.csv"],
     dag=dag,
 )
 
 load_task = PythonOperator(
     task_id='load_data',
     python_callable=load_data,
-    provide_context=False,
+    provide_context=True,  # Change to True to access context
     op_args=[],
     dag=dag,
 )
